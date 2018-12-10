@@ -1,0 +1,42 @@
+1).run the jar file using
+
+java -jar -cp "Parser.jar" --accesslog=C:\Parser\target\classes\access.log --startDate=2017-01-01.13:00:00 --duration=hourly --threshold=100
+
+2).Source code will be available at https://github.com/svempati2006/Parser and can be down loaded using https://github.com/svempati2006/Parser.git
+
+3).MySQL schema used for the log data (ecoats) on RDS instance in AWS cloud.
+SQL scripts are
+=============================================
+CREATE DATABASE IF NOT EXISTS ecoats;
+CREATE USER IF NOT EXISTS capital@localhost
+  IDENTIFIED BY 'capitaladmin';
+
+GRANT ALL ON ecoats.* TO capital@localhost;
+
+CREATE TABLE `access_log_entries` (
+  `request_date` datetime DEFAULT NULL,
+  `ip_address` varchar(255) NOT NULL,
+  `requestMethod` varchar(255) DEFAULT NULL,
+  `status_code` varchar(64) DEFAULT NULL,
+  `user_agent` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `log_comment` (
+  `id` bigint(20) unsigned NOT NULL,
+  `comment` varchar(255) DEFAULT NULL,
+  `ip_address` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+========================================
+4).TEST SQL QUERY
+
+SELECT request_date, ip_address, requestMethod, status_code, user_agent
+FROM access_log_entries 
+WHERE ip_address = "192.168.102.136";
+
+SELECT ip_address, request_date, COUNT(IP_ADDRESS) ip_count
+FROM access_log_entries
+WHERE request_date  BETWEEN "2017-01-01.13:00:00" AND "2017-01-01.14:00:00"
+GROUP BY ip_address 
+HAVING ip_count >= 100;
+
